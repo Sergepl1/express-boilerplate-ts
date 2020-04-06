@@ -1,5 +1,3 @@
-'use strict'
-
 import httpStatus from 'http-status'
 
 // hanlde not found error

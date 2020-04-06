@@ -1,10 +1,9 @@
-'use strict'
-
-import User from '../models/user.model'
 import jwt from 'jsonwebtoken'
-import config from '../config'
 import httpStatus from 'http-status'
 import uuidv1 from 'uuid/v1'
+
+import User from './model'
+import config from '../../config/index'
 
 export const register = async (req, res, next) => {
   try {

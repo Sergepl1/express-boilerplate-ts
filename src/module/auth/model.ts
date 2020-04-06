@@ -1,17 +1,16 @@
-'use strict'
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt-nodejs')
-const httpStatus = require('http-status')
-const APIError = require('../utils/APIError')
-const transporter = require('../services/transporter')
-const config = require('../config')
+import mongoose from 'mongoose'
+import bcrypt from 'bcrypt-nodejs'
+import httpStatus from 'http-status'
+
+import APIError from '../../utils/APIError'
+
 const Schema = mongoose.Schema
 
 const roles = [
   'user', 'admin'
 ]
 
-const userSchema = new Schema({
+const authSchema = new Schema({
   email: {
     type: String,
     required: true,
@@ -45,7 +44,7 @@ const userSchema = new Schema({
   timestamps: true
 })
 
-userSchema.pre('save', async function save (next) {
+authSchema.pre('save', async function save (next) {
   try {
     if (!this.isModified('password')) {
       return next()
@@ -59,30 +58,15 @@ userSchema.pre('save', async function save (next) {
   }
 })
 
-userSchema.post('save', async function saved (doc, next) {
+authSchema.post('save', async function saved (doc, next) {
   try {
-    const mailOptions = {
-      from: 'noreply',
-      to: this.email,
-      subject: 'Confirm creating account',
-      html: `<div><h1>Hello new user!</h1><p>Click <a href="${config.hostname}/api/auth/confirm?key=${this.activationKey}">link</a> to activate your new account.</p></div><div><h1>Hello developer!</h1><p>Feel free to change this template ;).</p></div>`
-    }
-
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error)
-      } else {
-        console.log('Email sent: ' + info.response)
-      }
-    })
-
     return next()
   } catch (error) {
     return next(error)
   }
 })
 
-userSchema.method({
+authSchema.method({
   transform () {
     const transformed = {}
     const fields = ['id', 'name', 'email', 'createdAt', 'role']
@@ -99,12 +83,12 @@ userSchema.method({
   }
 })
 
-userSchema.statics = {
+authSchema.statics = {
   roles,
 
   checkDuplicateEmailError (err) {
     if (err.code === 11000) {
-      var error = new Error('Email already taken')
+      const error = new Error('Email already taken')
       error.errors = [{
         field: 'email',
         location: 'body',
@@ -134,4 +118,4 @@ userSchema.statics = {
   }
 }
 
-module.exports = mongoose.model('User', userSchema)
+export default mongoose.model('Auth', authSchema)

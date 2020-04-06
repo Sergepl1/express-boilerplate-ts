@@ -1,10 +1,9 @@
-'use strict'
+import passport from 'passport'
+import bluebird from 'bluebird'
 
-const User = require('../models/user.model')
-const passport = require('passport')
-const APIError = require('../utils/APIError')
-const httpStatus = require('http-status')
-const bluebird = require('bluebird')
+import User from '../module/auth/model'
+import APIError from '../utils/APIError'
+import httpStatus from 'http-status'
 
 // handleJWT with roles
 const handleJWT = (req, res, next, roles) => async (err, user, info) => {
@@ -17,7 +16,7 @@ const handleJWT = (req, res, next, roles) => async (err, user, info) => {
 
   // log user in
   try {
-    if (error || !user) throw error
+    if (error || !user) { throw error }
     await logIn(user, { session: false })
   } catch (e) {
     return next(apiError)
@@ -30,7 +29,7 @@ const handleJWT = (req, res, next, roles) => async (err, user, info) => {
 
   req.user = user
 
-  return next()
+  return next();
 }
 
 // exports the middleware
@@ -41,4 +40,4 @@ const authorize = (roles = User.roles) => (req, res, next) =>
     handleJWT(req, res, next, roles)
   )(req, res, next)
 
-module.exports = authorize
+export default authorize

@@ -1,11 +1,11 @@
 import express from 'express';
 import { Request, Response } from 'express';
 
-import config from './config'
+import config from './config/index'
 import  cors from 'cors'
 import bodyParser  from 'body-parser'
 import errorHandler from '../middlewares/error-handler'
-import apiRouter from '../routes/api'
+import apiRouter from './routes'
 import passport  from 'passport'
 import passportJwt from '../services/passport'
 

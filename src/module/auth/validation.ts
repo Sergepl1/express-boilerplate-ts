@@ -1,9 +1,7 @@
-'use strict'
-
-const Joi = require('joi')
+import Joi from 'joi'
 
 // User validation rules
-module.exports = {
+export default {
   create: {
     body: {
       email: Joi.string().email().required(),

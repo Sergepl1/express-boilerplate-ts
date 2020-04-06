@@ -1,18 +1,17 @@
-'use strict'
+import passportJWT from 'passport-jwt'
 
-const config = require('../config')
-const User = require('../models/user.model')
-const passportJWT = require('passport-jwt')
+import config from '../config/index'
+import User from '../module/auth/model'
 
 const ExtractJwt = passportJWT.ExtractJwt
 const JwtStrategy = passportJWT.Strategy
 
-const jwtOptions = {
+export const jwtOptions = {
   secretOrKey: config.secret,
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
 }
 
-const jwtStrategy = new JwtStrategy(jwtOptions, (jwtPayload, done) => {
+export const jwt = new JwtStrategy(jwtOptions, (jwtPayload, done) => {
   console.log(jwtPayload)
   User.findById(jwtPayload.sub, (err, user) => {
     if (err) {
@@ -26,6 +25,3 @@ const jwtStrategy = new JwtStrategy(jwtOptions, (jwtPayload, done) => {
     }
   })
 })
-
-exports.jwtOptions = jwtOptions
-exports.jwt = jwtStrategy
